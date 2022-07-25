@@ -95,7 +95,7 @@ DKPhotoGalleryContentDataSource, DKPhotoGalleryContentDelegate {
         }
         
         #if swift(>=4.2)
-        let closeImage = UIImage.init(named: "")
+        let closeImage = UIImage.init(named: "close-white-icon")
         let closeBarButton = UIBarButtonItem(image: closeImage, style: .plain, target: self, action: #selector(DKPhotoGallery.dismissGallery))
         contentVC.navigationItem.leftBarButtonItem = closeBarButton
         #else
