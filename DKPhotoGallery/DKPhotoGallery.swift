@@ -95,9 +95,9 @@ DKPhotoGalleryContentDataSource, DKPhotoGalleryContentDelegate {
         }
         
         #if swift(>=4.2)
-        contentVC.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.cancel,
-                                                                     target: self,
-                                                                     action: #selector(DKPhotoGallery.dismissGallery))
+        let closeImage = UIImage.init(named: "")
+        let closeBarButton = UIBarButtonItem(image: closeImage, style: .plain, target: self, action: #selector(DKPhotoGallery.dismissGallery))
+        contentVC.navigationItem.leftBarButtonItem = closeBarButton
         #else
         contentVC.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.cancel,
                                                                      target: self,
