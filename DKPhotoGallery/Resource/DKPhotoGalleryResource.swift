@@ -37,6 +37,14 @@ public class DKPhotoGalleryResource {
         return imageForResource("VideoPlay")
     }
     
+    public class func videoPlayCenterImage() -> UIImage {
+        return imageForResource("play-video-icon")
+    }
+    
+    public class func videoPauseCenterImage() -> UIImage {
+        return imageForResource("pause-video-icon")
+    }
+    
     public class func videoToolbarPlayImage() -> UIImage {
         return imageForResource("ToolbarPlay")
     }

@@ -124,6 +124,11 @@ open class DKPlayerView: UIView {
         
         set { self.controlView.isHidden = newValue }
     }
+        public var isPlayMiddleHidden: Bool {
+            get { return self.playPauseMiddleButton.isHidden }
+            
+            set { self.playPauseMiddleButton.isHidden = newValue }
+    }
     
     public var isPlaying: Bool {
         get { return self.player.rate == 1.0 }
@@ -143,9 +148,13 @@ open class DKPlayerView: UIView {
     
     private let closeButton = UIButton(type: .custom)
     private let playPauseButton = UIButton(type: .custom)
+    private let playPauseMiddleButton = UIButton(type: .custom)
     private let timeSlider = UISlider()
-    private let startTimeLabel = UILabel()
-    private let durationLabel = UILabel()
+//    private let startTimeLabel = UILabel()
+    private let seperatorLabel = UILabel()
+    private let startTimeUpLabel = UILabel()
+    private let durationUpLabel = UILabel()
+//    private let durationLabel = UILabel()
     private var tapGesture: UITapGestureRecognizer!
     private lazy var bufferingIndicator: UIActivityIndicatorView = {
         #if swift(>=4.2)
@@ -306,6 +315,7 @@ open class DKPlayerView: UIView {
     public func updateContextBackground(alpha: CGFloat) {
         self.playButton.alpha = alpha
         self.controlView.alpha = alpha
+//        self.playPauseMiddleButton.alpha = alpha
     }
     
     public func reset() {
@@ -323,14 +333,24 @@ open class DKPlayerView: UIView {
         self.playButton.isHidden = false
         
         self.playPauseButton.isEnabled = false
+        self.playPauseMiddleButton.isEnabled = false
         self.timeSlider.isEnabled = false
         self.timeSlider.value = 0
         
-        self.startTimeLabel.isEnabled = false
-        self.startTimeLabel.text = "0:00"
+//        self.startTimeLabel.isEnabled = false
+//        self.startTimeLabel.text = "0:00"
         
-        self.durationLabel.isEnabled = false
-        self.durationLabel.text = "0:00"
+        self.startTimeUpLabel.isEnabled = false
+        self.startTimeUpLabel.text = "0:00"
+        
+//        self.durationLabel.isEnabled = false
+//        self.durationLabel.text = "0:00"
+        
+        self.durationUpLabel.isEnabled = false
+        self.durationUpLabel.text = "0:00"
+        
+        self.seperatorLabel.isEnabled = false
+        self.seperatorLabel.text = " / "
     }
     
     // MARK: - Private
@@ -338,13 +358,38 @@ open class DKPlayerView: UIView {
     private func setupUI() {
         self.playerLayer.player = self.player
         
-        self.playButton.setImage(DKPhotoGalleryResource.videoPlayImage(), for: .normal)
-        self.playButton.addTarget(self, action: #selector(playAndHidesControlView), for: .touchUpInside)
-        self.addSubview(self.playButton)
+        self.playButton.setImage(DKPhotoGalleryResource.videoPlayCenterImage(), for: .normal)
+        self.playButton.setImage(DKPhotoGalleryResource.videoPauseCenterImage(), for: .selected)
+        self.playButton.addTarget(self, action: #selector(playPauseButtonWasPressed), for: .touchUpInside)
+//        self.addSubview(self.playButton)
         self.playButton.sizeToFit()
         self.playButton.center = self.center
         self.playButton.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleBottomMargin, .flexibleRightMargin]
         
+        
+        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoToolbarPlayImage(), for: .normal)
+        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoToolbarPauseImage(), for: .selected)
+        self.playPauseMiddleButton.addTarget(self, action: #selector(playPauseButtonWasPressed), for: .touchUpInside)
+        controlView.addSubview(self.playPauseMiddleButton)
+        self.playPauseMiddleButton.sizeToFit()
+        self.playPauseMiddleButton.center = self.center
+//        self.playPauseMiddleButton.translatesAutoresizingMaskIntoConstraints = false
+        self.playPauseMiddleButton.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleBottomMargin, .flexibleRightMargin]
+        self.playPauseMiddleButton.addConstraint(NSLayoutConstraint(item: self.playPauseMiddleButton,
+                                                          attribute: .width,
+                                                          relatedBy: .equal,
+                                                          toItem: nil,
+                                                          attribute: .notAnAttribute,
+                                                          multiplier: 1,
+                                                          constant: 45))
+        self.playPauseMiddleButton.addConstraint(NSLayoutConstraint(item: self.playPauseMiddleButton,
+                                                          attribute: .height,
+                                                          relatedBy: .equal,
+                                                          toItem: nil,
+                                                          attribute: .notAnAttribute,
+                                                          multiplier: 1,
+                                                          constant: 45))
+
         self.bufferingIndicator.hidesWhenStopped = true
         self.bufferingIndicator.isUserInteractionEnabled = false
         self.bufferingIndicator.center = self.center
@@ -388,66 +433,169 @@ open class DKPlayerView: UIView {
         bottomView.translatesAutoresizingMaskIntoConstraints = false
         self.controlView.addSubview(bottomView)
         
-        self.playPauseButton.setImage(DKPhotoGalleryResource.videoToolbarPlayImage(), for: .normal)
-        self.playPauseButton.setImage(DKPhotoGalleryResource.videoToolbarPauseImage(), for: .selected)
-        self.playPauseButton.addTarget(self, action: #selector(playPauseButtonWasPressed), for: .touchUpInside)
-        bottomView.addSubview(self.playPauseButton)
-        self.playPauseButton.translatesAutoresizingMaskIntoConstraints = false
-        self.playPauseButton.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+//        self.playPauseButton.setImage(DKPhotoGalleryResource.videoToolbarPlayImage(), for: .normal)
+//        self.playPauseButton.setImage(DKPhotoGalleryResource.videoToolbarPauseImage(), for: .selected)
+//        self.playPauseButton.addTarget(self, action: #selector(playPauseButtonWasPressed), for: .touchUpInside)
+//
+//        bottomView.addSubview(self.playPauseButton)
+//        self.playPauseButton.translatesAutoresizingMaskIntoConstraints = false
+//        self.playPauseButton.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+//                                                              attribute: .width,
+//                                                              relatedBy: .equal,
+//                                                              toItem: nil,
+//                                                              attribute: .notAnAttribute,
+//                                                              multiplier: 1,
+//                                                              constant: 40))
+//        self.playPauseButton.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+//                                                              attribute: .height,
+//                                                              relatedBy: .equal,
+//                                                              toItem: nil,
+//                                                              attribute: .notAnAttribute,
+//                                                              multiplier: 1,
+//                                                              constant: 40))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+//                                                    attribute: .left,
+//                                                    relatedBy: .equal,
+//                                                    toItem: bottomView,
+//                                                    attribute: .left,
+//                                                    multiplier: 1,
+//                                                    constant: 20))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+//                                                    attribute: .top,
+//                                                    relatedBy: .equal,
+//                                                    toItem: bottomView,
+//                                                    attribute: .top,
+//                                                    multiplier: 1,
+//                                                    constant: 0))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+//                                                    attribute: .bottom,
+//                                                    relatedBy: .equal,
+//                                                    toItem: bottomView,
+//                                                    attribute: .bottom,
+//                                                    multiplier: 1,
+//                                                    constant: 0))
+        bottomView.addSubview(self.startTimeUpLabel)
+        self.startTimeUpLabel.textColor = UIColor.white
+        self.startTimeUpLabel.textAlignment = .natural
+        self.startTimeUpLabel.font = UIFont.systemFont(ofSize: 10, weight: .regular)
+        self.startTimeUpLabel.translatesAutoresizingMaskIntoConstraints = false
+        bottomView.addConstraint(NSLayoutConstraint(item: self.startTimeUpLabel,
+                                                    attribute: .bottom,
+                                                    relatedBy: .equal,
+                                                    toItem: self.timeSlider,
+                                                    attribute: .top,
+                                                    multiplier: 1,
+                                                    constant: 0))
+        bottomView.addConstraint(NSLayoutConstraint(item: self.startTimeUpLabel,
+                                                    attribute: .leading,
+                                                    relatedBy: .equal,
+                                                    toItem: bottomView,
+                                                    attribute: .leading,
+                                                    multiplier: 1,
+                                                    constant: 0))
+        self.startTimeUpLabel.addConstraint(NSLayoutConstraint(item: self.startTimeUpLabel,
                                                               attribute: .width,
                                                               relatedBy: .equal,
                                                               toItem: nil,
                                                               attribute: .notAnAttribute,
                                                               multiplier: 1,
-                                                              constant: 40))
-        self.playPauseButton.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+                                                              constant: 30))
+        self.startTimeUpLabel.addConstraint(NSLayoutConstraint(item: self.startTimeUpLabel,
                                                               attribute: .height,
                                                               relatedBy: .equal,
                                                               toItem: nil,
                                                               attribute: .notAnAttribute,
                                                               multiplier: 1,
-                                                              constant: 40))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
-                                                    attribute: .left,
+                                                              constant: 15))
+        
+        bottomView.addSubview(self.seperatorLabel)
+        self.seperatorLabel.text = " / "
+        self.seperatorLabel.textColor = UIColor.white
+        self.seperatorLabel.textAlignment = .natural
+        self.seperatorLabel.font = UIFont.systemFont(ofSize: 10, weight: .regular)
+        self.seperatorLabel.translatesAutoresizingMaskIntoConstraints = false
+        bottomView.addConstraint(NSLayoutConstraint(item: self.seperatorLabel,
+                                                    attribute: .bottom,
                                                     relatedBy: .equal,
-                                                    toItem: bottomView,
-                                                    attribute: .left,
-                                                    multiplier: 1,
-                                                    constant: 20))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
-                                                    attribute: .top,
-                                                    relatedBy: .equal,
-                                                    toItem: bottomView,
+                                                    toItem: self.timeSlider,
                                                     attribute: .top,
                                                     multiplier: 1,
                                                     constant: 0))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.playPauseButton,
+        self.seperatorLabel.addConstraint(NSLayoutConstraint(item: self.seperatorLabel,
+                                                              attribute: .width,
+                                                              relatedBy: .equal,
+                                                              toItem: nil,
+                                                              attribute: .notAnAttribute,
+                                                              multiplier: 1,
+                                                              constant: 15))
+        self.seperatorLabel.addConstraint(NSLayoutConstraint(item: self.seperatorLabel,
+                                                              attribute: .height,
+                                                              relatedBy: .equal,
+                                                              toItem: nil,
+                                                              attribute: .notAnAttribute,
+                                                              multiplier: 1,
+                                                              constant: 15))
+        bottomView.addConstraint(NSLayoutConstraint(item: self.seperatorLabel,
+                                                    attribute: .leading,
+                                                    relatedBy: .equal,
+                                                    toItem: self.startTimeUpLabel,
+                                                    attribute: .trailing,
+                                                    multiplier: 1,
+                                                    constant: 0))
+        
+        bottomView.addSubview(self.durationUpLabel)
+        self.durationUpLabel.textColor = UIColor.white
+        self.durationUpLabel.textAlignment = .natural
+        self.durationUpLabel.font = UIFont.systemFont(ofSize: 10, weight: .regular)
+        self.durationUpLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.durationUpLabel.addConstraint(NSLayoutConstraint(item: self.durationUpLabel,
+                                                              attribute: .width,
+                                                              relatedBy: .equal,
+                                                              toItem: nil,
+                                                              attribute: .notAnAttribute,
+                                                              multiplier: 1,
+                                                              constant: 30))
+        self.durationUpLabel.addConstraint(NSLayoutConstraint(item: self.durationUpLabel,
+                                                              attribute: .height,
+                                                              relatedBy: .equal,
+                                                              toItem: nil,
+                                                              attribute: .notAnAttribute,
+                                                              multiplier: 1,
+                                                              constant: 15))
+        bottomView.addConstraint(NSLayoutConstraint(item: self.durationUpLabel,
+                                                    attribute: .leading,
+                                                    relatedBy: .equal,
+                                                    toItem: self.seperatorLabel,
+                                                    attribute: .trailing,
+                                                    multiplier: 1,
+                                                    constant: 0))
+        bottomView.addConstraint(NSLayoutConstraint(item: self.durationUpLabel,
                                                     attribute: .bottom,
                                                     relatedBy: .equal,
-                                                    toItem: bottomView,
+                                                    toItem: self.startTimeUpLabel,
                                                     attribute: .bottom,
                                                     multiplier: 1,
                                                     constant: 0))
         
-        bottomView.addSubview(self.startTimeLabel)
-        self.startTimeLabel.textColor = UIColor.white
-        self.startTimeLabel.textAlignment = .right
-        self.startTimeLabel.font = UIFont(name: "Helvetica Neue", size: 13)
-        self.startTimeLabel.translatesAutoresizingMaskIntoConstraints = false
-        bottomView.addConstraint(NSLayoutConstraint(item: self.startTimeLabel,
-                                                    attribute: .left,
-                                                    relatedBy: .equal,
-                                                    toItem: self.playPauseButton,
-                                                    attribute: .right,
-                                                    multiplier: 1,
-                                                    constant: 0))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.startTimeLabel,
-                                                    attribute: .centerY,
-                                                    relatedBy: .equal,
-                                                    toItem: self.playPauseButton,
-                                                    attribute: .centerY,
-                                                    multiplier: 1,
-                                                    constant: 0))
+//        bottomView.addSubview(self.startTimeLabel)
+//        self.startTimeLabel.textColor = UIColor.white
+//        self.startTimeLabel.textAlignment = .right
+//        self.startTimeLabel.font = UIFont(name: "Helvetica Neue", size: 13)
+//        self.startTimeLabel.translatesAutoresizingMaskIntoConstraints = false
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.startTimeLabel,
+//                                                    attribute: .left,
+//                                                    relatedBy: .equal,
+//                                                    toItem: self.playPauseButton,
+//                                                    attribute: .right,
+//                                                    multiplier: 1,
+//                                                    constant: 0))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.startTimeLabel,
+//                                                    attribute: .centerY,
+//                                                    relatedBy: .equal,
+//                                                    toItem: self.playPauseButton,
+//                                                    attribute: .centerY,
+//                                                    multiplier: 1,
+//                                                    constant: 0))
         
         bottomView.addSubview(self.timeSlider)
         self.timeSlider.addTarget(self, action: #selector(timeSliderDidChange(sender:event:)), for: .valueChanged)
@@ -459,61 +607,89 @@ open class DKPlayerView: UIView {
                                                          toItem: nil,
                                                          attribute: .notAnAttribute,
                                                          multiplier: 1,
-                                                         constant: 40))
+                                                         constant: 15))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.timeSlider,
+//                                                    attribute: .left,
+//                                                    relatedBy: .equal,
+//                                                    toItem: self.playPauseButton,
+//                                                    attribute: .right,
+//                                                    multiplier: 1,
+//                                                    constant: 15))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.timeSlider,
+//                                                    attribute: .centerY,
+//                                                    relatedBy: .equal,
+//                                                    toItem: self.playPauseButton,
+//                                                    attribute: .centerY,
+//                                                    multiplier: 1,
+//                                                    constant: 0))
+        bottomView.addConstraint(NSLayoutConstraint(item: self.timeSlider,
+                                                    attribute: .trailing,
+                                                    relatedBy: .equal,
+                                                    toItem: bottomView,
+                                                    attribute: .trailing,
+                                                    multiplier: 1,
+                                                    constant: 0))
         bottomView.addConstraint(NSLayoutConstraint(item: self.timeSlider,
                                                     attribute: .left,
                                                     relatedBy: .equal,
-                                                    toItem: self.startTimeLabel,
-                                                    attribute: .right,
+                                                    toItem: bottomView,
+                                                    attribute: .left,
                                                     multiplier: 1,
-                                                    constant: 15))
+                                                    constant: 0))
         bottomView.addConstraint(NSLayoutConstraint(item: self.timeSlider,
-                                                    attribute: .centerY,
+                                                    attribute: .top,
                                                     relatedBy: .equal,
-                                                    toItem: self.playPauseButton,
-                                                    attribute: .centerY,
+                                                    toItem: bottomView,
+                                                    attribute: .top,
+                                                    multiplier: 1,
+                                                    constant: 0))
+        bottomView.addConstraint(NSLayoutConstraint(item: self.timeSlider,
+                                                    attribute: .bottom,
+                                                    relatedBy: .equal,
+                                                    toItem: bottomView,
+                                                    attribute: .bottom,
                                                     multiplier: 1,
                                                     constant: 0))
         
-        bottomView.addSubview(self.durationLabel)
-        self.durationLabel.textColor = UIColor.white
-        self.durationLabel.font = self.startTimeLabel.font
-        self.durationLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.durationLabel.addConstraint(NSLayoutConstraint(item: self.durationLabel,
-                                                            attribute: .width,
-                                                            relatedBy: .equal,
-                                                            toItem: nil,
-                                                            attribute: .notAnAttribute,
-                                                            multiplier: 1,
-                                                            constant: 50))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
-                                                    attribute: .width,
-                                                    relatedBy: .equal,
-                                                    toItem: self.startTimeLabel,
-                                                    attribute: .width,
-                                                    multiplier: 1,
-                                                    constant: 0))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
-                                                    attribute: .left,
-                                                    relatedBy: .equal,
-                                                    toItem: self.timeSlider,
-                                                    attribute: .right,
-                                                    multiplier: 1,
-                                                    constant: 15))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
-                                                    attribute: .right,
-                                                    relatedBy: .equal,
-                                                    toItem: bottomView,
-                                                    attribute: .right,
-                                                    multiplier: 1,
-                                                    constant: -10))
-        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
-                                                    attribute: .centerY,
-                                                    relatedBy: .equal,
-                                                    toItem: self.startTimeLabel,
-                                                    attribute: .centerY,
-                                                    multiplier: 1,
-                                                    constant: 0))
+//        bottomView.addSubview(self.durationLabel)
+//        self.durationLabel.textColor = UIColor.white
+//        self.durationLabel.font = self.startTimeLabel.font
+//        self.durationLabel.translatesAutoresizingMaskIntoConstraints = false
+//        self.durationLabel.addConstraint(NSLayoutConstraint(item: self.durationLabel,
+//                                                            attribute: .width,
+//                                                            relatedBy: .equal,
+//                                                            toItem: nil,
+//                                                            attribute: .notAnAttribute,
+//                                                            multiplier: 1,
+//                                                            constant: 50))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
+//                                                    attribute: .width,
+//                                                    relatedBy: .equal,
+//                                                    toItem: self.startTimeLabel,
+//                                                    attribute: .width,
+//                                                    multiplier: 1,
+//                                                    constant: 0))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
+//                                                    attribute: .left,
+//                                                    relatedBy: .equal,
+//                                                    toItem: self.timeSlider,
+//                                                    attribute: .right,
+//                                                    multiplier: 1,
+//                                                    constant: 15))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
+//                                                    attribute: .right,
+//                                                    relatedBy: .equal,
+//                                                    toItem: bottomView,
+//                                                    attribute: .right,
+//                                                    multiplier: 1,
+//                                                    constant: -10))
+//        bottomView.addConstraint(NSLayoutConstraint(item: self.durationLabel,
+//                                                    attribute: .centerY,
+//                                                    relatedBy: .equal,
+//                                                    toItem: self.startTimeLabel,
+//                                                    attribute: .centerY,
+//                                                    multiplier: 1,
+//                                                    constant: 0))
         
         self.controlView.addConstraint(NSLayoutConstraint(item: bottomView,
                                                     attribute: .left,
@@ -539,13 +715,17 @@ open class DKPlayerView: UIView {
         
         if let controlParentView = self.controlParentView {
             controlParentView.addSubview(self.controlView)
+//            controlParentView.addSubview(self.playButton)
+//            controlParentView.addSubview(self.playPauseMiddleButton)
         } else {
             self.addSubview(self.controlView)
+//            self.addSubview(self.playButton)
+//            self.addSubview(self.playPauseMiddleButton)
         }
         
         self.controlView.frame = self.controlView.superview!.bounds
         self.controlView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+                
         let backgroundImageView = UIImageView(image: DKPhotoGalleryResource.videoPlayControlBackgroundImage())
         backgroundImageView.frame = self.controlView.bounds
         backgroundImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -557,6 +737,7 @@ open class DKPlayerView: UIView {
         self.timeSlider.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(sliderTappedAction(tapGesture:))))
         
         self.controlView.isHidden = self.isControlHidden
+//        self.playPauseMiddleButton.isHidden = self.isPlayMiddleHidden
     }
     
     @objc private func playPauseButtonWasPressed() {
@@ -603,7 +784,7 @@ open class DKPlayerView: UIView {
     
     @objc private func toggleControlView(tapGesture: UITapGestureRecognizer) {
         self.isControlHidden = !self.isControlHidden
-        
+        self.isPlayMiddleHidden = !self.isPlayMiddleHidden
         self.startHidesControlTimerIfNeeded()
     }
 
@@ -612,7 +793,7 @@ open class DKPlayerView: UIView {
         guard self.autoHidesControlView else { return }
         
         self.stopHidesControlTimer()
-        if !self.isControlHidden && self.isPlaying {
+        if !self.isControlHidden && !self.isPlayMiddleHidden && self.isPlaying {
             self.hidesControlViewTimer = Timer.scheduledTimer(timeInterval: 3.5,
                                                               target: self,
                                                               selector: #selector(hidesControlViewIfNeeded),
@@ -631,6 +812,7 @@ open class DKPlayerView: UIView {
     @objc private func hidesControlViewIfNeeded() {
         if self.isPlaying {
             self.isControlHidden = true
+            self.isPlayMiddleHidden = true
         }
     }
     
@@ -689,7 +871,8 @@ open class DKPlayerView: UIView {
             guard let strongSelf = self else { return }
             
             let timeElapsed = Float(CMTimeGetSeconds(time))
-            strongSelf.startTimeLabel.text = strongSelf.createTimeString(time: timeElapsed)
+//            strongSelf.startTimeLabel.text = strongSelf.createTimeString(time: timeElapsed)
+            strongSelf.startTimeUpLabel.text = strongSelf.createTimeString(time: timeElapsed)
             
             if strongSelf.isPlaying {
                 strongSelf.timeSlider.value = timeElapsed
@@ -716,6 +899,8 @@ open class DKPlayerView: UIView {
     @objc func itemDidPlayToEndTime(notification: Notification) {
         if (notification.object as? AVPlayerItem) == self.player.currentItem {
             self.isFinishedPlaying = true
+            self.isControlHidden = false
+            self.isPlayMiddleHidden = false
             self.playButton.isHidden = false
         }
     }
@@ -753,14 +938,24 @@ open class DKPlayerView: UIView {
             self.timeSlider.maximumValue = Float(newDurationSeconds)
             self.timeSlider.value = currentTime
             
+            self.playPauseMiddleButton.isEnabled = hasValidDuration
             self.playPauseButton.isEnabled = hasValidDuration
+            self.playButton.isEnabled = hasValidDuration
             self.timeSlider.isEnabled = hasValidDuration
             
-            self.startTimeLabel.isEnabled = hasValidDuration
-            self.startTimeLabel.text = createTimeString(time: currentTime)
+//            self.startTimeLabel.isEnabled = hasValidDuration
+//            self.startTimeLabel.text = createTimeString(time: currentTime)
             
-            self.durationLabel.isEnabled = hasValidDuration
-            self.durationLabel.text = self.createTimeString(time: Float(newDurationSeconds))
+            self.startTimeUpLabel.isEnabled = hasValidDuration
+            self.startTimeUpLabel.text = createTimeString(time: currentTime)
+            self.seperatorLabel.isEnabled = hasValidDuration
+            
+//            self.durationLabel.isEnabled = hasValidDuration
+//            self.durationLabel.text = self.createTimeString(time: Float(newDurationSeconds))
+            
+            self.durationUpLabel.isEnabled = hasValidDuration
+            self.durationUpLabel.text = self.createTimeString(time: Float(newDurationSeconds))
+            
         } else if keyPath == #keyPath(AVPlayerItem.status) {
             guard let currentItem = object as? AVPlayerItem else { return }
             guard self.autoPlayOrShowErrorOnce else { return }
@@ -807,9 +1002,13 @@ open class DKPlayerView: UIView {
             if newRate == 1.0 {
                 self.startHidesControlTimerIfNeeded()
                 self.playPauseButton.isSelected = true
+                self.playPauseMiddleButton.isSelected = true
+                self.playButton.isSelected = true
             } else {
                 self.stopHidesControlTimer()
                 self.playPauseButton.isSelected = false
+                self.playPauseMiddleButton.isSelected = false
+                self.playButton.isSelected = false
             }
         } else if keyPath == #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp) {
             self.updateBufferingIndicatorStateIfNeeded()
