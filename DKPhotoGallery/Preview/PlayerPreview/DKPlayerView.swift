@@ -367,8 +367,8 @@ open class DKPlayerView: UIView {
         self.playButton.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleBottomMargin, .flexibleRightMargin]
         
         
-        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoToolbarPlayImage(), for: .normal)
-        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoToolbarPauseImage(), for: .selected)
+        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoPlayCenterImage(), for: .normal)
+        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoPauseCenterImage(), for: .selected)
         self.playPauseMiddleButton.addTarget(self, action: #selector(playPauseButtonWasPressed), for: .touchUpInside)
         controlView.addSubview(self.playPauseMiddleButton)
         self.playPauseMiddleButton.sizeToFit()
