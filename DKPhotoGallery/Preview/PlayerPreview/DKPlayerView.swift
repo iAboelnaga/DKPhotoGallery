@@ -358,7 +358,6 @@ open class DKPlayerView: UIView {
     private func setupUI() {
         self.playerLayer.player = self.player
         
-        self.playPauseMiddleButton.superview?.backgroundColor = UIColor.black
         self.playButton.setImage(DKPhotoGalleryResource.videoPlayCenterImage(), for: .normal)
         self.playButton.setImage(DKPhotoGalleryResource.videoPauseCenterImage(), for: .selected)
         self.playButton.addTarget(self, action: #selector(playPauseButtonWasPressed), for: .touchUpInside)
@@ -367,12 +366,12 @@ open class DKPlayerView: UIView {
         self.playButton.center = self.center
         self.playButton.autoresizingMask = [.flexibleTopMargin, .flexibleLeftMargin, .flexibleBottomMargin, .flexibleRightMargin]
         
-        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoPlayCenterImage(), for: .normal)
-        self.playPauseMiddleButton.setImage(DKPhotoGalleryResource.videoPauseCenterImage(), for: .selected)
+        self.playPauseMiddleButton.setImage(UIImage.init(named: "play-video-icon"), for: .normal)
+        self.playPauseMiddleButton.setImage(UIImage.init(named: "pause-video-icon"), for: .selected)
         self.playPauseMiddleButton.addTarget(self, action: #selector(playPauseButtonWasPressed), for: .touchUpInside)
         controlView.addSubview(self.playPauseMiddleButton)
-        self.playPauseMiddleButton.sizeToFit()
-        self.playPauseMiddleButton.center = self.center
+//        self.playPauseMiddleButton.sizeToFit()
+//        self.playPauseMiddleButton.center = self.center
         self.playPauseMiddleButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             playPauseMiddleButton.centerXAnchor.constraint(equalTo: playPauseMiddleButton.superview!.centerXAnchor),
